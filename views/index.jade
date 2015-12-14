@@ -1,5 +1,32 @@
 extends layout
 
 block content
-  h1= title
-  p Welcome to #{title}
+  .form-horizontal
+    .form-group
+      .col-sm-12
+        a.btn.btn-primary.form-control(href='http://zxing.appsot.com/scan') Scan
+    .form-group
+      label.col-sm-1(for='barcode') Barcode
+      .col-sm-5
+        input#barcode.form-control(type='text')
+      label.col-sm-1(for='format') Format
+      .col-sm-2
+        input#format.form-control(type='text')
+      label.col-sm-1(for='type') Type
+      .col-sm-2
+        input#type.form-control(type='text')
+
+  h2 About
+  p custom search: /?barcode=%s&format=%f&type=%t
+
+  h2 Debug
+  #debug
+
+  script.
+    $(document).ready(function() {
+      var search = $.deparam(location.search.substring(1));
+      $('#barcode').val(search.barcode);
+      $('#format').val(search.format);
+      $('#type').val(search.type);
+      $('#debug').html(JSON.stringify(search));
+    });
