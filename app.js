@@ -34,6 +34,10 @@ app.use(function(req, res, next) {
 
   logger.info(meta.remoteIp + ' ' + meta.method + ' ' + meta.url + ' HTTP/' + meta.httpVersion + ' referer: ' + meta.referer);
 
+  if (meta.method == 'POST' || meta.method == 'PATCH' || meta.method == 'PUT') {
+    logger.debug('params:', req.body);
+  }
+
   res.on('finish', function() {
     var finishTime = process.hrtime(startTime);
     meta.statusCode = res.statusCode;
