@@ -368,30 +368,6 @@
         }
       }
     },
-    "express-bunyan-logger": {
-      "version": "1.2.0",
-      "from": "https://registry.npmjs.org/express-bunyan-logger/-/express-bunyan-logger-1.2.0.tgz",
-      "resolved": "https://registry.npmjs.org/express-bunyan-logger/-/express-bunyan-logger-1.2.0.tgz",
-      "dependencies": {
-        "node-uuid": {
-          "version": "1.4.7",
-          "from": "https://registry.npmjs.org/node-uuid/-/node-uuid-1.4.7.tgz",
-          "resolved": "https://registry.npmjs.org/node-uuid/-/node-uuid-1.4.7.tgz"
-        },
-        "useragent": {
-          "version": "2.1.8",
-          "from": "https://registry.npmjs.org/useragent/-/useragent-2.1.8.tgz",
-          "resolved": "https://registry.npmjs.org/useragent/-/useragent-2.1.8.tgz",
-          "dependencies": {
-            "lru-cache": {
-              "version": "2.2.4",
-              "from": "https://registry.npmjs.org/lru-cache/-/lru-cache-2.2.4.tgz",
-              "resolved": "https://registry.npmjs.org/lru-cache/-/lru-cache-2.2.4.tgz"
-            }
-          }
-        }
-      }
-    },
     "jade": {
       "version": "1.11.0",
       "from": "https://registry.npmjs.org/jade/-/jade-1.11.0.tgz",

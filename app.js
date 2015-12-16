@@ -1,7 +1,7 @@
 var express = require('express');
 var path = require('path');
 //var favicon = require('serve-favicon');
-var logger = require('express-bunyan-logger');
+var logger = require('./lib/logger');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
@@ -16,17 +16,34 @@ app.set('view engine', 'jade');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(logger({
-  name: 'Catalog',
-  streams: [{
-    level: 'info',
-    stream: process.stdout
-  }]
-}));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use(function(req, res, next) {
+  var startTime = process.hrtime();
+
+  var meta = {
+    method: req.method,
+    url: req.url,
+    httpVersion: req.httpVersionMajor + '.' + req.httpVersionMinor,
+    remoteIp: req.ip || req.connection.remoteAddress || (req.socket && req.socket.remoteAddress) || (req.socket.socket && req.socket.socket.remoteAddress) || '127.0.0.1',
+    referer: req.header('referer') || req.header('referrer') || ''
+  }
+
+  logger.info(meta.remoteIp + ' ' + meta.method + ' ' + meta.url + ' HTTP/' + meta.httpVersion + ' referer: ' + meta.referer);
+
+  res.on('finish', function() {
+    var finishTime = process.hrtime(startTime);
+    meta.statusCode = res.statusCode;
+    meta.responseTime = finishTime[0] * 1e3 + finishTime[1] / 1e6;
+
+    logger.info(meta.remoteIp + ' ' + meta.method + ' ' + meta.url + ' HTTP/' + meta.httpVersion + ' - ' + meta.statusCode + ' ' + meta.responseTime + 'ms' + ' referer: ' + meta.referer);
+  });
+
+  next();
+});
 
 app.use('/', routes);
 app.use('/users', users);

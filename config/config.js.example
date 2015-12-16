@@ -1,0 +1,15 @@
+module.exports = {
+  production: {
+    logger: {
+      name: 'Catalog',
+      streams: [{
+        level: 'info',
+        stream: process.stdout
+      }]
+    },
+    searchupc: {
+      api: 'http://www.searchupc.com/handlers/upcsearch.ashx',
+      access_token: ''
+    }
+  } 
+}
