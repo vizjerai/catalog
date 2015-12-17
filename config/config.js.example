@@ -8,6 +8,9 @@ module.exports = {
         password: '',
         database: 'catalog',
         charset: 'utf8'
+      },
+      migrations: {
+        tableName: 'knex_migrations'
       }
     },
     logger: {
