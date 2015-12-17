@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var config = require('../lib/config.js');
 var request = require('request');
+var ApiSearchUpc = require('../models/api_search_upc');
 
 router.route('/')
   .get(function(req, res, next) {
@@ -11,28 +12,12 @@ router.route('/')
   .post(function(req, res, next) {
     var data = {title: 'Catalog', form: req.body};
 
-    var request_options = {
-      url: config.searchupc.api,
-      method: 'GET',
-      json: true,
-      formData: {
-        request_type: 3,
-        access_token: config.searchupc.access_token,
-        upc: data.form.barcode
-      }
-    };
-    data.request_options = request_options;
-
-    request(request_options, function(error, response, body) {
-      if (error) {
-        return next(error);
-      }
-      data.response = response;
-      if (response.statusCode == 200) {
+    ApiSearchUpc.findAll(data.form.barcode)
+      .then(function(body) {
         data.body = body;
-      }
-      res.render('index', data);
-    });
+        res.render('index', data);
+      })
+      .error(next);
   });
 
 module.exports = router;
