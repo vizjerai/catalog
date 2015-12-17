@@ -1,32 +1,49 @@
 extends layout
 
 block content
-  .form-horizontal
+  form.form-horizontal(method='post')
     .form-group
       .col-sm-12
         a.btn.btn-primary.form-control(href='http://zxing.appsot.com/scan') Scan
     .form-group
-      label.col-sm-1(for='barcode') Barcode
+      label.control-label.col-sm-1(for='barcode') Barcode
       .col-sm-5
-        input#barcode.form-control(type='text')
-      label.col-sm-1(for='format') Format
+        input#barcode.form-control(type='text', name='barcode', value=form.barcode)
+      label.control-label.col-sm-1(for='format') Format
       .col-sm-2
-        input#format.form-control(type='text')
-      label.col-sm-1(for='type') Type
+        input#format.form-control(type='text', name='format', value=form.format)
+      label.control-label.col-sm-1(for='type') Type
       .col-sm-2
-        input#type.form-control(type='text')
+        input#type.form-control(type='text', name='type', value=form.type)
+    .form-group
+      .col-sm-12
+        button.btn.btn-primary.form-control Submit
+
+  h2 Response
+
+  table.table.table-condensed.table-stripe.table-hover
+    thead
+      tr
+        th index
+        th name
+        th price
+        th store
+    tbody
+      each row in Object.keys(body || {})
+        tr
+          td= row
+          td
+            img(src=body[row].imageurl)
+            = body[row].productname
+          td= body[row].price + ' ' + body[row].currency
+          td= body[row].storename
 
   h2 About
   p custom search: /?barcode=%s&format=%f&type=%t
 
   h2 Debug
-  #debug
-
-  script.
-    $(document).ready(function() {
-      var search = $.deparam(location.search.substring(1));
-      $('#barcode').val(search.barcode);
-      $('#format').val(search.format);
-      $('#type').val(search.type);
-      $('#debug').html(JSON.stringify(search));
-    });
+  h3 Request
+  = JSON.stringify(request_options)
+  h3 Response
+  = JSON.stringify(response)
+  = JSON.stringify(body)
