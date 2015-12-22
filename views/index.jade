@@ -17,7 +17,7 @@ block content
         input#type.form-control(type='text', name='type', value=form.type)
     .form-group
       .col-sm-12
-        button.btn.btn-primary.form-control Submit
+        button.btn.btn-primary.form-control Lookup Barcode
 
   h2 Response
 
@@ -43,18 +43,19 @@ block content
               input(type='hidden', name='product_name', value=body[row].productname)
               input(type='hidden', name='image_url', value=body[row].imageurl)
               input(type='hidden', name='store_name', value=body[row].storename)
-              button.btn.btn-primary Add
+              button.btn.btn-primary I Own This
 
   h2 About
-  p custom search: /?barcode=%s&format=%f&type=%t
+  p In ZXing Barcode Scanner's Settings set Custom Search URL to /?barcode=%s&format=%f&type=%t
 
-  h2 Debug
-  h3 Request
-  = JSON.stringify(request_options)
-  h3 Response
-  .response= JSON.stringify(response)
-  .body= JSON.stringify(body)
-  .collection= JSON.stringify(collection)
+  //-  
+    h2 Debug
+    h3 Request
+    = JSON.stringify(request_options)
+    h3 Response
+    .response= JSON.stringify(response)
+    .body= JSON.stringify(body)
+    .collection= JSON.stringify(collection)
 
   h2 Catalog Items
 
