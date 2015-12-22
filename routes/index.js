@@ -8,7 +8,6 @@ router.route('/')
     var data = {title: 'Catalog', form: req.query};
 
     CatalogItems.forge().fetch().then(function(collection) {
-      console.log(collection);
       data.collection = collection;
       res.render('index', data);
     }).catch(next);
