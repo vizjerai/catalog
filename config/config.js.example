@@ -23,6 +23,13 @@ module.exports = {
     searchupc: {
       api: 'http://www.searchupc.com/handlers/upcsearch.ashx',
       access_token: ''
+    },
+    // API Access link for creating client ID and secret:
+    //  https://code.google.com/apis/console
+    //  must enable Google+ API
+    google: { // API Access link for creating client ID and secret: https://code.google.com/apis/console
+      client_id: '',
+      client_secret: ''
     }
   } 
 }
