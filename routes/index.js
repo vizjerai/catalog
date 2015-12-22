@@ -1,13 +1,17 @@
 var express = require('express');
 var router = express.Router();
-var config = require('../lib/config.js');
-var request = require('request');
+var CatalogItems = require('../models/catalog_item').Collection;
 var ApiSearchUpc = require('../models/api_search_upc');
 
 router.route('/')
   .get(function(req, res, next) {
     var data = {title: 'Catalog', form: req.query};
-    res.render('index', data);
+
+    CatalogItems.forge().fetch().then(function(collection) {
+      console.log(collection);
+      data.collection = collection;
+      res.render('index', data);
+    }).catch(next);
   })
   .post(function(req, res, next) {
     var data = {title: 'Catalog', form: req.body};
@@ -15,9 +19,11 @@ router.route('/')
     ApiSearchUpc.findAll(data.form.barcode)
       .then(function(body) {
         data.body = body;
+        return CatalogItems.forge().fetch();
+      }).then(function(collection) {
+        data.collection = collection;
         res.render('index', data);
-      })
-      .error(next);
+      }).catch(next);
   });
 
 module.exports = router;

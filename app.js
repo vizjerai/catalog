@@ -4,8 +4,11 @@ var path = require('path');
 var logger = require('./lib/logger');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
+//var methodOverride = require('method-override');
+var methodOverride = require('./lib/method_override');
 
 var routes = require('./routes/index');
+var catalog_items = require('./routes/catalog_items');
 var users = require('./routes/users');
 
 var app = express();
@@ -16,8 +19,10 @@ app.set('view engine', 'jade');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use(methodOverride);
+app.use(bodyParser.json());
+
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -32,7 +37,8 @@ app.use(function(req, res, next) {
     referer: req.header('referer') || req.header('referrer') || ''
   }
 
-  logger.info(meta.remoteIp + ' ' + meta.method + ' ' + meta.url + ' HTTP/' + meta.httpVersion + ' referer: ' + meta.referer);
+  logger.info('%s %s %s HTTP/%s referer: %s', meta.remoteIp, meta.method, meta.url,
+    meta.httpVersion, meta.referer);
 
   if (meta.method == 'POST' || meta.method == 'PATCH' || meta.method == 'PUT') {
     logger.debug('params:', req.body);
@@ -43,13 +49,15 @@ app.use(function(req, res, next) {
     meta.statusCode = res.statusCode;
     meta.responseTime = finishTime[0] * 1e3 + finishTime[1] / 1e6;
 
-    logger.info(meta.remoteIp + ' ' + meta.method + ' ' + meta.url + ' HTTP/' + meta.httpVersion + ' - ' + meta.statusCode + ' ' + meta.responseTime + 'ms' + ' referer: ' + meta.referer);
+    logger.info('%s %s %s HTTP/%s - %s %sms referer: %s', meta.remoteIp, meta.method, meta.url,
+      meta.httpVersion, meta.statusCode, meta.responseTime, meta.referer);
   });
 
   next();
 });
 
 app.use('/', routes);
+app.use('/catalog_items', catalog_items);
 app.use('/users', users);
 
 // catch 404 and forward to error handler

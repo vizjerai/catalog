@@ -37,6 +37,13 @@ block content
             = body[row].productname
           td= body[row].price + ' ' + body[row].currency
           td= body[row].storename
+          td
+            form(method='post', action='/catalog_items')
+              input(type='hidden', name='barcode', value=form.barcode)
+              input(type='hidden', name='product_name', value=body[row].productname)
+              input(type='hidden', name='image_url', value=body[row].imageurl)
+              input(type='hidden', name='store_name', value=body[row].storename)
+              button.btn.btn-primary Add
 
   h2 About
   p custom search: /?barcode=%s&format=%f&type=%t
@@ -45,5 +52,25 @@ block content
   h3 Request
   = JSON.stringify(request_options)
   h3 Response
-  = JSON.stringify(response)
-  = JSON.stringify(body)
+  .response= JSON.stringify(response)
+  .body= JSON.stringify(body)
+  .collection= JSON.stringify(collection)
+
+  h2 Catalog Items
+
+  table.table.table-condensed.table-stripe.table-hover
+    thead
+      tr
+        th barcode
+        th name
+    tbody
+      each row in collection.models
+        tr
+          td= row.get('barcode')
+          td
+            img(src=row.get('image_url'))
+            = row.get('product_name')
+          td
+            form(method='POST', action='/catalog_items/' + row.get('id'))
+              input(type='hidden', name='_method', value='DELETE')
+              button.btn.btn-default Delete
