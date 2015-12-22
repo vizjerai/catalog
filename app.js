@@ -24,6 +24,7 @@ app.use(methodOverride);
 app.use(bodyParser.json());
 
 app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'bower_components')));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use(function(req, res, next) {
