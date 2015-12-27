@@ -69,7 +69,7 @@ block content
         tr
           td= row.get('barcode')
           td
-            img(src=row.get('image_url'))
+            img.product_image(src=row.get('image_url'))
             = row.get('product_name')
           td
             form(method='POST', action='/catalog_items/' + row.get('id'))
