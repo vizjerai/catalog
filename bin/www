@@ -7,6 +7,7 @@
 var app = require('../app');
 var debug = require('debug')('catalog:server');
 var http = require('http');
+var logger = require('../lib/logger');
 
 /**
  * Get port from environment and store in Express.
@@ -87,4 +88,5 @@ function onListening() {
     ? 'pipe ' + addr
     : 'port ' + addr.port;
   debug('Listening on ' + bind);
+  logger.info('Listening on ' + bind);
 }
