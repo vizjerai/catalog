@@ -6,7 +6,7 @@ var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 //var methodOverride = require('method-override');
 var methodOverride = require('./lib/method_override');
-var session = require('express-session'); // TODO: this throws deprecation warnings
+var session = require('express-session');
 
 var routes = require('./routes/index');
 var catalog_items = require('./routes/catalog_items');
@@ -20,12 +20,25 @@ app.set('view engine', 'jade');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
-app.use(bodyParser.urlencoded({ extended: false }));
-app.use(methodOverride);
-app.use(bodyParser.json());
-
-app.use(session({secret: 'i have no secret'})); // TODO: set secret in config
 app.use(cookieParser());
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.json());
+app.use(methodOverride);
+
+var config = require('./lib/config');
+var KnexSessionStore = require('connect-session-knex')(session);
+var store = new KnexSessionStore({
+  knex: require('knex')(config.database)
+});
+
+app.use(session({
+  cookie: {secure: false}, // requires ssl for true
+  resave: false,
+  saveUninitialized: false,
+  secret: 'i have no secret',
+  maxAge: 3600000, // 1 hour
+  store: store
+})); // TODO: set secret in config
 app.use(express.static(path.join(__dirname, 'bower_components')));
 app.use(express.static(path.join(__dirname, 'public')));
 
@@ -59,7 +72,6 @@ app.use(function(req, res, next) {
   next();
 });
 
-var config = require('./lib/config');
 var GOOGLE_CLIENT_ID = config.google.client_id;
 var GOOGLE_CLIENT_SECRET = config.google.client_secret;
 
@@ -71,11 +83,18 @@ var GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
 // deserializes the whole google profile from the session
 //
 //  TODO: set the user id into the session and find user by id when deserializing.
+
+var User = require('./models/user').Model;
 passport.serializeUser(function(user, done) {
-  done(null, user);
+  done(null, {user_id: user.get('id')});
 });
 passport.deserializeUser(function(obj, done) {
-  done(null, obj);
+  User.forge({id: obj.user_id}).fetch().then(function(user) {
+    done(null, user);
+  }).catch(function(err) {
+    console.error('Error', err.stack);
+    done(err);
+  });
 });
 
 // Use the GoogleStrategy within Passport.
@@ -87,11 +106,21 @@ passport.use(new GoogleStrategy({
 }, function(accessToken, refreshToken, profile, done) {
   // asynchronous verification
   process.nextTick(function() {
+    return User.forge({google_id: profile.id}).fetch().then(function(user) {
+      if (user === null) {
+        return User.forge({name: profile.displayName, google_id: profile.id}).save()
+      }
+      return user;
+    }).then(function(user) {
+      return done(null, user);
+    }).catch(function(err) {
+      return done(err);
+    });
 
     // currently returns whole google profile.
     // Typical application should associate the Google Account with a user in the database,
     // and return that user instead.
-    return done(null, profile);
+    //return done(null, profile);
   });
 }));
 
@@ -118,13 +147,6 @@ app.get('/logout', function(req, res) {
   req.logout();
   res.redirect('/');
 });
-
-function ensureAuthenticated(req, res, next) {
-  if (req.isAuthenticated()) {
-    return next();
-  }
-  res.redirect('/login');
-};
 
 app.use('/', routes);
 app.use('/catalog_items', catalog_items);
