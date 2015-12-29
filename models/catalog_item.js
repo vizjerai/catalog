@@ -1,6 +1,7 @@
 var Base = require('./base');
 
 var CatalogItem = Base.Model.extend({
+  hasTimestamps: true,
   tableName: 'catalog_items'
 });
 module.exports.Model = CatalogItem;
