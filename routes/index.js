@@ -1,6 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var CatalogItems = require('../models/catalog_item').Collection;
+var CatalogItem = require('../models/catalog_item').Model;
 var ApiSearchUpc = require('../models/api_search_upc');
 var ensureAuthenticated = require('../lib/ensure_authenticated');
 
@@ -9,7 +10,8 @@ router.route('/')
   .get(function(req, res, next) {
     var data = {title: 'Catalog', form: req.query};
 
-    CatalogItems.forge().fetch().then(function(collection) {
+    console.log('user_id', req.user.get('id'));
+    CatalogItems.forge().query().where({user_id: req.user.get('id')}).select().then(function(collection) {
       data.collection = collection;
       res.render('index', data);
     }).catch(next);
@@ -20,7 +22,7 @@ router.route('/')
     ApiSearchUpc.findAll(data.form.barcode)
       .then(function(body) {
         data.body = body;
-        return CatalogItems.forge().fetch();
+        return CatalogItems.forge().query().where({user_id: req.user.get('id')}).select();
       }).then(function(collection) {
         data.collection = collection;
         res.render('index', data);

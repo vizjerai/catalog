@@ -65,13 +65,13 @@ block content
         th barcode
         th name
     tbody
-      each row in collection.models
+      each row in collection
         tr
-          td= row.get('barcode')
+          td= row.barcode
           td
-            img.product_image(src=row.get('image_url'))
-            = row.get('product_name')
+            img.product_image(src=row.image_url)
+            = row.product_name
           td
-            form(method='POST', action='/catalog_items/' + row.get('id'))
+            form(method='POST', action='/catalog_items/' + row.id)
               input(type='hidden', name='_method', value='DELETE')
               button.btn.btn-default Delete
