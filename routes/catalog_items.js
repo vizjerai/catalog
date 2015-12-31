@@ -5,7 +5,11 @@ var CatalogItem = require('../models/catalog_item').Model;
 
 router.route('/')
   .get(function(req, res, next) {
-    CatalogItems.forge().query({where: {user_id: req.user.get('id')}}).fetch().then(function(collection) {
+    var query = {
+      where: {user_id: req.user.get('id')},
+      orderBy: ['product_name','asc']
+    };
+    CatalogItems.forge().query(query).fetch().then(function(collection) {
       res.json({collection: collection});
     }).catch(next);
   })
