@@ -10,8 +10,7 @@ router.route('/')
   .get(function(req, res, next) {
     var data = {title: 'Catalog', form: req.query};
 
-    console.log('user_id', req.user.get('id'));
-    CatalogItems.forge().query().where({user_id: req.user.get('id')}).select().then(function(collection) {
+    CatalogItems.forge().query({where: {user_id: req.user.get('id')}}).fetch().then(function(collection) {
       data.collection = collection;
       res.render('index', data);
     }).catch(next);
@@ -22,7 +21,7 @@ router.route('/')
     ApiSearchUpc.findAll(data.form.barcode)
       .then(function(body) {
         data.body = body;
-        return CatalogItems.forge().query().where({user_id: req.user.get('id')}).select();
+        return CatalogItems.forge().query({where: {user_id: req.user.get('id')}}).fetch();
       }).then(function(collection) {
         data.collection = collection;
         res.render('index', data);
